@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Web servis za klubove i igrače</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <h1>Dodaj klub</h1>
+    <form action="/dodaj_klub" method="post">
+      <label for="ime">Ime kluba:</label>
+      <input type="text" name="ime" required /><br />
+      <label for="drzava">Grad:</label>
+      <input type="text" name="drzava" required /><br />
+      <label for="budzet">Budžet:</label>
+      <input type="number" name="budzet" step="0.01" required /><br />
+      <button type="submit">Dodaj klub</button>
+    </form>
+
+    <h1>Dodaj igrača</h1>
+    <form action="/dodaj_igraca" method="post">
+      <label for="ime">Ime igrača:</label>
+      <input type="text" name="ime" required /><br />
+      <label for="prezime">Prezime igrača:</label>
+      <input type="text" name="prezime" required /><br />
+      <label for="cijena">Cijena igrača:</label>
+      <input type="number" name="cijena" step="0.01" required /><br />
+      <label for="pozicija">Pozicija igrača:</label>
+      <input type="text" name="pozicija" required /><br />
+      <button type="submit">Dodaj igrača</button>
+    </form>
+    <div class="prvi">
+      <h1>Slobodni igrači</h1>
+      <ul>
+        {% for igrac in slobodni_igraci %}
+        <li>
+          {{ igrac.ime }} {{ igrac.prezime }} - Cijena: {{ igrac.cijena }} -
+          Pozicija: {{ igrac.pozicija }}
+          <form action="/kupi_igraca/{{ igrac.id }}" method="post">
+            <select name="klub_id" id="klub_id" required> 
+              <option value="" disabled selected>Odaberite klub</option>
+              {% for klub in klubovi %}
+              <option value="{{ klub.id }}">{{ klub.ime }}</option>
+              {% endfor %}
+            </select>
+            <button type="submit">Kupi igrača</button>
+          </form>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="drugi">
+      <h1>Klubovi</h1>
+      <ul>
+        {% for klub in klubovi %}
+        <li class="boja2">
+          {{ klub.ime }} ({{ klub.drzava }}) - Budžet: {{ klub.budzet }}
+          <form action="/obrisi_klub/{{ klub.id }}" method="post">
+            <span><button type="submit">Obriši klub</button></span>
+          </form>
+          <form action="/promijeni_ime_kluba/{{ klub.id }}" method="post">
+            <label for="novo_ime"></label>
+            <input type="text" name="novo_ime" required />
+            <button type="submit">Promijeni ime</button>
+          </form>
+        </li>
+        <ul>
+          {% for igrac in klub.igraci %}
+          <li class="boja">
+            {{ igrac.ime }} {{ igrac.prezime }} - Pozicija: {{ igrac.pozicija }}
+          </li>
+          {% endfor %}
+        </ul>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="treci">
+      <h1>Igrači</h1>
+      <ul>
+        {% for igrac in igraci %}
+        <li class="boja3">
+          {{ igrac.ime }} {{ igrac.prezime }} - Cijena: {{ igrac.cijena }} -
+          Pozicija: {{ igrac.pozicija }} {% if igrac.klub %}
+          <form action="/prodaj_igraca/{{ igrac.id }}" method="post">
+            <button type="submit">Prodaj igrača</button>
+          </form>
+          <form action="/uredi_cijenu_igraca/{{ igrac.id }}" method="post">
+            <label for="nova_cijena">Nova cijena:</label>
+            <input type="number" name="nova_cijena" step="0.01" required />
+            <button type="submit">Uredi cijenu</button>
+          </form>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </body>
+</html>
